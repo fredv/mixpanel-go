@@ -9,22 +9,26 @@ See [https://mixpanel.com/docs/api-documentation/exporting-raw-data-you-inserted
 
 Currently this is used to simply export all event data in a JSONL stream to Stdout.
 
+You can test the export using:
+```sh
+	MIXPANEL_API_KEY={YOUR_KEY} MIXPANEL_API_SECRET={YOUR_SECRET} go run main.go
+```
+
+`client/client.go` contains the setup of the Mixpanel client and request signing.
+
+The Export Command uses the API v2 export for JSONL events of the specified date range with an expire set to 60 seconds per default.
+
 ```go
-	apiKey := os.Getenv("MIXPANEL_API_KEY")
-	apiSecret := os.Getenv("MIXPANEL_API_SECRET")
 	cmd := &ExportCommand{
 		FromDate:  "2015-12-12",
 		ToDate:    "2015-12-13",
-		ApiKey:    apiKey,
-		ApiSecret: apiSecret,
 		Where: "",
 		Event: "",
 	}
-	err := cmd.Export()
+	err := cmd.Run()
 ```
 
 ### ToDos
-* Extract Mixpanel client that can sign requests
 * Make ExportCommand interface reusable
 * Add CLI interface for ExportCommand
 * Work on Import Command
