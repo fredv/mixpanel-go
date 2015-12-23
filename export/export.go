@@ -2,6 +2,7 @@ package export
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/url"
 	"os"
 
@@ -32,10 +33,15 @@ func (cmd *ExportCommand) Export(client *client.MixpanelClient) error {
 	if err != nil {
 		return err
 	}
-	body, err := client.Get(url)
+	reader, err := client.Get(url)
 	if err != nil {
 		return err
 	}
-	fmt.Fprintf(os.Stdout, body)
+	defer reader.Close()
+	bytes, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return err
+	}
+	fmt.Fprintf(os.Stdout, string(bytes))
 	return nil
 }

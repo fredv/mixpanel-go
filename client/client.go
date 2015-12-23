@@ -3,7 +3,7 @@ package client
 import (
 	"crypto/md5"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -24,19 +24,12 @@ func NewMixpanelClient() *MixpanelClient {
 	}
 }
 
-func (client *MixpanelClient) Get(url *url.URL) (string, error) {
+func (client *MixpanelClient) Get(url *url.URL) (io.ReadCloser, error) {
 	rsp, err := http.Get(url.String())
-	defer rsp.Body.Close()
-
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-
-	bytes, err := ioutil.ReadAll(rsp.Body)
-	if err != nil {
-		return "", err
-	}
-	return string(bytes), nil
+	return rsp.Body, nil
 }
 
 func (client *MixpanelClient) Timestamp(offset int32) string {
